@@ -8,7 +8,7 @@ Pipeline Python completo que coleta, trata e cruza dados da **Tabela FIPE** com 
 
 ## 📊 Dashboard
 
-![FIPEdash Preview](assets/dashboard_preview.png)
+*Print do dashboard será adicionado após a finalização do .pbix*
 
 Layout **Slate Navy** — sidebar azul-marinho, cards elevados, silhueta de carro, tooltip com foto do veículo.
 
