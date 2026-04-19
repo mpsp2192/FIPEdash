@@ -1,26 +1,18 @@
-# ── Dados brutos — não versionar (podem ser grandes ou sensíveis) ──
-data/raw/
-data/fipe_parcial.json
+# Pasta temporária de download — não precisa versionar
+data/temp_ssp/
 
-# ── Python ──
+# Python
 __pycache__/
-*.py[cod]
+*.pyc
 *.pyo
-.env
-.venv
+.Python
 venv/
-env/
+.venv/
 
-# ── Sistema ──
-.DS_Store
-Thumbs.db
-desktop.ini
-
-# ── IDEs ──
+# IDEs
 .vscode/
 .idea/
-*.swp
-*.swo
 
-# ── Power BI temporários ──
-*.pbix.bak
+# Sistema
+.DS_Store
+Thumbs.db
