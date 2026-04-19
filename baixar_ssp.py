@@ -1,11 +1,10 @@
 """
-baixar_ssp.py
-=============
+baixar_ssp.py — versão GitHub Actions
+=====================================
 Baixa os arquivos de veículos subtraídos da SSP-SP (2017 até o ano atual),
-normaliza as colunas removendo as indesejadas e salva a pasta pronta
-para ser consumida direto pelo Power BI.
+normaliza as colunas e salva em data/Veículos Roubados/.
 
-Destino: C:\\Users\\mpsp9\\OneDrive\\Área de Trabalho\\FIPEdash\\data\\Veículos Roubados\\
+Usa caminhos relativos para funcionar tanto localmente quanto no GitHub Actions.
 
 Regras de normalização:
   - REMOVE:  VERSAO, LOGRADOURO_VERSAO, DESC_NATUREZA_LOCAL
@@ -15,11 +14,7 @@ Regras de normalização:
 
 Uso:
     python baixar_ssp.py          # baixa anos que faltam
-    python baixar_ssp.py --force  # re-baixa o ano atual (rodar dia 1 de cada mês)
-
-Agendamento Windows — Task Scheduler, mensal dia 1, 08:00:
-    Programa  : python
-    Argumentos: C:\\Users\\mpsp9\\OneDrive\\Área de Trabalho\\FIPEdash\\baixar_ssp.py --force
+    python baixar_ssp.py --force  # re-baixa o ano atual
 """
 
 import requests
@@ -31,8 +26,9 @@ import argparse
 from datetime import datetime
 
 
-PASTA_DESTINO = r"C:\Users\mpsp9\OneDrive\Área de Trabalho\FIPEdash\data\Veículos Roubados"
-PASTA_TEMP    = r"C:\Users\mpsp9\OneDrive\Área de Trabalho\FIPEdash\data\temp_ssp"
+# Caminhos relativos — funcionam em qualquer ambiente
+PASTA_DESTINO = os.path.join("data", "Veículos Roubados")
+PASTA_TEMP    = os.path.join("data", "temp_ssp")
 BASE_URL      = "https://www.ssp.sp.gov.br/assets/estatistica/transparencia/baseDados/veiculosSub"
 HEADERS       = {
     "User-Agent": "Mozilla/5.0",
@@ -97,7 +93,6 @@ def baixar(ano, forcar=False):
 def normalizar(path_xlsx, ano):
     """Remove colunas indesejadas e duplicadas, salva XLSX normalizado no destino."""
 
-    # Descobre a aba correta
     wb = openpyxl.load_workbook(path_xlsx, read_only=True, data_only=True)
     aba = next((s for s in wb.sheetnames if "VEICULO" in s.upper()), wb.sheetnames[0])
     wb.close()
@@ -105,16 +100,13 @@ def normalizar(path_xlsx, ano):
     print(f"  📖 {ano}: lendo aba '{aba}'...")
     df = pd.read_excel(path_xlsx, sheet_name=aba, dtype=str, engine="openpyxl")
 
-    # Remove colunas None/vazias
     df = df[[c for c in df.columns if c is not None and str(c).strip() not in ("None","")]]
 
-    # Renomeia variações para o padrão
     df = df.rename(columns=RENOMEAR)
 
-    # Remove colunas indesejadas
     df = df.drop(columns=[c for c in df.columns if c in REMOVER], errors="ignore")
 
-    # Remove colunas duplicadas (ex: CIDADE 2x) — mantém primeira ocorrência
+    # Remove colunas duplicadas (ex: CIDADE 2x)
     cols_unicas = []
     vistas = set()
     for c in df.columns:
@@ -161,10 +153,6 @@ def main():
     print("=" * 55)
     print(f"  ✅ {sucessos} arquivos em {PASTA_DESTINO}")
     print("=" * 55)
-    print()
-    print("  No Power BI:")
-    print(f"    Obter Dados → Pasta → {PASTA_DESTINO}")
-    print(f"    Combinar e transformar → tabela única")
 
 
 if __name__ == "__main__":
