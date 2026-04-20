@@ -2,17 +2,16 @@ name: Atualiza dados SSP-SP
 
 on:
   schedule:
-    # Todo dia 1 do mês às 08:00 (horário UTC = 05:00 BRT)
     - cron: '0 8 1 * *'
-  workflow_dispatch:  # permite rodar manualmente na interface do GitHub
+  workflow_dispatch:
 
 permissions:
-  contents: write  # necessário para fazer commit dos arquivos atualizados
+  contents: write
 
 jobs:
   baixar-ssp:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 120
 
     steps:
       - name: Checkout do repositório
