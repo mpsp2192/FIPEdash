@@ -28,7 +28,9 @@ jobs:
           pip install requests pandas openpyxl
 
       - name: Executar download e normalização
-        run: python baixar_ssp.py --force
+        run: python -u baixar_ssp.py --force
+        env:
+          PYTHONUNBUFFERED: "1"
 
       - name: Commit e push dos arquivos atualizados
         run: |
